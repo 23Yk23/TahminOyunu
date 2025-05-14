@@ -1,0 +1,72 @@
+﻿<style>
+    body {
+        margin: 0;
+        padding: 0;
+        /* Önce gradyanı tanımlıyoruz ve tüm alanı kaplamasını sağlıyoruz */
+        background: linear-gradient(135deg, #1e1e2f, #12121c);
+        /* Ardından arka plan fotoğrafını ekliyoruz, 'contain' ile ortalıyoruz ve tekrar etmesini engelliyoruz */
+        background-image: url('/images/sitearkaplanı.png');
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: white;
+        /* Birden fazla arka plan katmanını desteklemeyen tarayıcılar için yedek renk */
+        background-color: #1e1e2f;
+    }
+
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 20px;
+        background-color: rgba(0, 0, 0, 0.5); /* İsteğe bağlı */
+    }
+
+    .site-title {
+        text-align: center;
+        font-size: 32px;
+        font-weight: bold;
+        margin-bottom: 40px;
+        color: #f8f8f8;
+    }
+
+    .category-box {
+        background-color: #2c2c3e;
+        padding: 15px 25px;
+        margin: 15px 0;
+        border-radius: 10px;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+        .category-box a {
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 18px;
+        }
+
+        .category-box:hover {
+            background-color: #44445a;
+            transform: scale(1.02);
+        }
+</style>
+
+<div class="container">
+    <div class="site-title">
+        Film / Dizi Tahmin Oyunu<br />
+        Hangi sahne hangi yapıma ait? Eğlenceli bir test seni bekliyor!
+    </div>
+
+    <h2 style="text-align: center; margin-bottom: 20px;">Kategori Seç</h2>
+
+    @foreach (var kategori in Model)
+    {
+        <div class="category-box">
+            <a href="/Home/GameList/@kategori.Id">
+                @kategori.Name
+            </a>
+        </div>
+    }
+</div>

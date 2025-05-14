@@ -1,0 +1,59 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>404 Sayfa Bulunamadı</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            color: #333;
+        }
+
+        .errorpage {
+            margin-top: 10%;
+        }
+
+        h1 {
+            font-size: 120px;
+            margin: 0;
+            color: #dc3545;
+        }
+
+        p {
+            font-size: 28px;
+            margin: 20px 0;
+        }
+
+        a {
+            display: inline-block;
+            text-decoration: none;
+            color: #fff;
+            background-color: #007bff;
+            padding: 12px 24px;
+            border-radius: 5px;
+            font-size: 20px;
+            margin-top: 30px;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+            a:hover {
+                background-color: #0056b3;
+                transform: scale(1.05);
+            }
+    </style>
+</head>
+<body>
+    <div class="errorpage">
+        <h1>404</h1>
+        <p>Maalesef, aradığınız sayfa bulunamadı.</p>
+        <a href="/home">Ana Sayfaya Dön</a>
+    </div>
+</body>
+</html>
