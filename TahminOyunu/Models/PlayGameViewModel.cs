@@ -8,7 +8,13 @@ namespace TahminOyunu.Models // YourProjectName kısmını kendi projenizin name
     public class PlayGameViewModel
     {
         public int MediaId { get; set; }
-        public string MediaTitle { get; set; }
+        public string MediaTitle { get; set; }//eklendi
+        public int SelectedIndex { get; set; } = 0; //eklendi
+        public int? PreviousMediaId { get; set; }//eklendi
+        public int CurrentGameNumber { get; set; }//eklendi
+
+        public int? NextMediaId { get; set; }
+        public DateTime CreatedAt { get; set; }
         public List<MediaImage> AllImages { get; set; } = new List<MediaImage>();
         public string CurrentImagePath { get; set; }
         public int CurrentImageIndex { get; set; }

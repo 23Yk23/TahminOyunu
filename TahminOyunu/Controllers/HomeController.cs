@@ -30,7 +30,9 @@ namespace TahminOyunu.Controllers
                           .OrderBy(g => g.CreatedAt) // Yüklenme sýrasýna göre
                           .ToList();
 
-            ViewBag.CategoryName = cm.TGetById(id).Name;
+            var category = cm.TGetById(id);
+            ViewBag.CategoryName = category != null ? category.Name : "Kategori bulunamadý";
+
             return View(games);
         }
 
@@ -39,6 +41,19 @@ namespace TahminOyunu.Controllers
         public IActionResult PlayGame(int id) // mediaId'yi parametre olarak alýyoruz
         {
             var media = mm.TGetByIdWithImages(id); // Media'yý resimleriyle birlikte getiriyoruz
+
+            var allInCategory = mm.GetMediaByCategoryId(media.CategoryId)
+                      .OrderBy(m => m.CreatedAt)
+                      .ToList();
+
+            var currentIndex = allInCategory.FindIndex(m => m.Id == media.Id);
+            int gameNumber = currentIndex + 1;
+
+            var previousId = currentIndex > 0 ? allInCategory[currentIndex - 1].Id : (int?)null;
+            var nextId = currentIndex < allInCategory.Count - 1 ? allInCategory[currentIndex + 1].Id : (int?)null;
+
+
+
             if (media == null || !media.MediaImages.Any())
             {
                 TempData["ErrorMessage"] = "Oyun baþlatýlamadý veya bu içeriðe ait resim bulunamadý. Lütfen baþka bir oyun seçin.";
@@ -70,7 +85,14 @@ namespace TahminOyunu.Controllers
                 Attempts = 1, // Ýlk deneme
                 IsCorrect = false,
                 GameOver = false,
-                Message = ""
+                Message = "",
+
+                CreatedAt = media.CreatedAt,
+                PreviousMediaId = previousId,
+                NextMediaId = nextId,
+                CurrentGameNumber = gameNumber,
+
+
             };
 
             // Döngüsel referanslarý görmezden gelmek için JsonSerializerSettings oluþturun
@@ -90,6 +112,7 @@ namespace TahminOyunu.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult PlayGame(PlayGameViewModel submittedModel, string submitButton) // Gelen model ve submitButton
         {
+
             // Session'dan mevcut oyun durumunu al
             var sessionKey = $"PlayGameViewModel_{submittedModel.MediaId}"; // Doðru MediaId'yi kullan
             var sessionData = HttpContext.Session.GetString(sessionKey);
@@ -102,6 +125,15 @@ namespace TahminOyunu.Controllers
             }
 
             var viewModel = JsonConvert.DeserializeObject<PlayGameViewModel>(sessionData);
+
+            if (submitButton == "select")
+            {
+                viewModel.CurrentImageIndex = submittedModel.SelectedIndex;
+                viewModel.CurrentImagePath = viewModel.AllImages[submittedModel.SelectedIndex].ImagePath;
+
+                HttpContext.Session.SetString(sessionKey, JsonConvert.SerializeObject(viewModel));
+                return View(viewModel);
+            }
 
             // Gelen tahmini ViewModel'e ata (eðer formdan direkt baðlanmýyorsa)
             viewModel.UserGuess = submittedModel.UserGuess;
