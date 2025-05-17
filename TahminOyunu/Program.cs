@@ -1,4 +1,11 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+builder.Services.AddControllersWithViews();
 
 // Session ve daðýtýk cache servislerini ekleyin <3-15 yeni ekledim>
 builder.Services.AddDistributedMemoryCache(); // Session state'i bellekte saklamak için gereklidir.
@@ -12,6 +19,21 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true; // Cookie'nin uygulama iþlevselliði için gerekli olduðunu belirtir
                                        // Bu, özellikle GDPR gibi gizlilik düzenlemeleri için önemlidir.
                                        // options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Sadece HTTPS üzerinden gönderilmesini saðlar (üretim için önerilir)
+});
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Home/Index"; // Giriþ yapmayan kullanýcýlar bu sayfaya yönlendirilir.
+        options.AccessDeniedPath = "/Login/Index"; // Eriþim yetkisi olmayan kullanýcýlar buraya yönlendirilir.  
+    });
+
+builder.Services.AddMvc(config =>
+{
+    var policy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+    config.Filters.Add(new AuthorizeFilter(policy));
 });
 
 // Add services to the container.
@@ -35,6 +57,7 @@ app.UseRouting();
 
 app.UseSession();//yeniekledim <3-15> . 2
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

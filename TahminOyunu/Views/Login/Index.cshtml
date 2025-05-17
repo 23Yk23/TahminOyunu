@@ -1,0 +1,124 @@
+﻿@model EntityLayer.Concrete.Admin
+
+@{
+    ViewData["Title"] = "Giriş Yap";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    
+
+    .content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: calc(100vh - 150px); /* Navbar ve footer'ı dışarda bırakmak için */
+        padding: -20px;
+        margin-top: -20px; /* Üst boşluk */
+    }
+
+    .login-form {
+        background-color: #fff;
+        padding: 40px;
+        border-radius: 12px;
+        width: 100%;
+        max-width: 500px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        box-sizing: border-box;
+    }
+
+    .login-form h2 {
+        text-align: center;
+        color: #272727;
+        font-size: 32px;
+        margin-bottom: 30px;
+    }
+
+    .login-form input {
+        width: 100%;
+        padding: 18px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        font-size: 18px;
+    }
+
+    .login-form .text-danger {
+        color: #dc3545;
+        font-size: 14px;
+        margin-top: -10px;
+        margin-bottom: 10px;
+        display: block;
+    }
+
+    .login-form button {
+        width: 100%;
+        padding: 18px;
+        background-color: #272727;
+        border: none;
+        border-radius: 10px;
+        color: white;
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+    .login-form button:hover {
+        background-color: #171e5e;
+        transition: 0.3s;
+    }
+
+    .login-form .signup-link {
+        text-align: center;
+        margin-top: 25px;
+    }
+
+    .login-form .signup-link a {
+        color: #272727;
+        text-decoration: none;
+        font-size: 18px;
+    }
+
+    .login-form .signup-link a:hover {
+        text-decoration: underline;
+    }
+
+        .login-form .form-check {
+            display: flex;
+            align-items: center;
+            margin: 10px 0 20px 0; /* üst ve alt margin ekledim */
+            padding-left: 0; /* varsayılan padding'i kaldırdım */
+        }
+
+        .login-form .form-check-input {
+            width: 16px;
+            height: 16px;
+            margin: 0;
+            padding: 0;
+            cursor: pointer;
+        }
+
+        .login-form .form-check-label {
+            font-size: 16px;
+            margin-left: 8px; /* checkbox ile metin arasına boşluk */
+            cursor: pointer;
+        }
+
+
+</style>
+
+
+<div style="background: linear-gradient(135deg, #1e1e2f, #12121c); flex-grow: 1;" class="content d-flex justify-content-center align-items-center">
+    <div class="login-form bg-white text-dark p-5 rounded shadow" style="max-width: 500px; width: 100%;">
+        <h2 class="text-center mb-4">Giriş Yap</h2>
+        <form method="post">
+            <div class="mb-3">
+                <label for="username" class="form-label fw-bold">Kullanıcı Adı</label>
+                <input type="text" class="form-control" name="Username" id="username" required>
+            </div>
+            <div class="mb-3">
+                <label for="passwordhash" class="form-label fw-bold">Şifre</label>
+                <input type="password" class="form-control" name="PasswordHash" id="passwordhash" required>
+            </div>
+            <button type="submit" class="btn btn-dark w-100">Giriş Yap</button>
+        </form>
+    </div>
+</div>

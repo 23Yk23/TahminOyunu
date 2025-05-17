@@ -10,5 +10,8 @@ namespace DataAccessLayer.Abstract
     public interface IMediaDal : IGenericDal<Media>
     {
         Media GetByIdWithImages(int id);
+        public List<Media> GetListWithCategory();
+
+
     }
 }

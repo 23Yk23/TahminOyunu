@@ -15,5 +15,8 @@ namespace BusinessLayer.Abstract
 
         // YENİ EKLENECEK METOT:
         Media TGetByIdWithImages(int id);
+
+        public List<Media> GetListWithCategoryM();
+
     }
 }

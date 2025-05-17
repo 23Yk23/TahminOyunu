@@ -13,6 +13,8 @@ namespace DataAccessLayer.EntityFramework
 {
     public class EfMediaRepository : GenericRepository<Media>, IMediaDal
     {
+
+
         public Media GetByIdWithImages(int id)
         {
             using (var c = new Context()) // Context sınıfınızın adı neyse onu kullanın
@@ -22,5 +24,12 @@ namespace DataAccessLayer.EntityFramework
                         .FirstOrDefault(m => m.Id == id);
             }
         }
+
+        public List<Media> GetListWithCategory()
+        {
+            using var c = new Context();
+            return c.Medias.Include(m => m.Category).Include(m => m.MediaImages).ToList();
+        }
+
     }
 }

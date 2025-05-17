@@ -1,0 +1,104 @@
+﻿@model EntityLayer.Concrete.Category
+
+@{
+    ViewData["Title"] = "Yeni Kategori Ekle";
+}
+
+<style>
+    /* Stil tanımları (diğer sayfalardaki stillere benzer şekilde) */
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        background-color: #1e1e2f;
+        color: white;
+    }
+
+    body {
+        display: flex;
+        flex-direction: column;
+    }
+
+    main {
+        flex: 1;
+        padding: 40px 60px;
+    }
+
+    .form-container {
+        background-color: #2a2a40;
+        padding: 20px;
+        margin: 20px 40px;
+        border-radius: 8px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+        color: #ccc;
+    }
+
+    input[type="text"],
+    textarea {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #444;
+        border-radius: 5px;
+        background-color: #333;
+        color: white;
+        box-sizing: border-box;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none;
+        margin-left: 10px;
+    }
+
+    .text-danger {
+        color: #dc3545;
+    }
+</style>
+
+<div class="form-container">
+    <h2>Yeni Kategori Ekle</h2>
+
+    <form method="post" asp-action="AddCategory">
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+        <div class="form-group">
+            <label asp-for="Name">Kategori Adı</label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Description">Açıklama</label>
+            <textarea asp-for="Description" class="form-control"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn-primary">Kaydet</button>
+        <a asp-action="Categories" class="btn-secondary">İptal</a>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,159 @@
+﻿@model TahminOyunu.Models.ContentViewModel
+@{
+    ViewData["Title"] = "İçerik Düzenle";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+        background: linear-gradient(135deg, #1e1e2f, #12121c);
+    }
+
+    body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    .container-fluid {
+        flex: 1;
+        padding: 220px 40px;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">İçeriği Güncelle</h6>
+        </div>
+        <div class="card-body">
+            <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                @Html.HiddenFor(m => m.Id)
+
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="form-group">
+                    <label asp-for="Title" class="control-label">Başlık</label>
+                    <input asp-for="Title" class="form-control" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Description" class="control-label">Açıklama</label>
+                    <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="CategoryId" class="control-label">Kategori</label>
+                    <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.Categories">
+                        <option value="">-- Kategori Seçin --</option>
+                    </select>
+                    <span asp-validation-for="CategoryId" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <div class="custom-control custom-checkbox">
+                        <input asp-for="IsActive" class="custom-control-input" id="isActive" />
+                        <label asp-for="IsActive" class="custom-control-label" for="isActive">Aktif</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label">Mevcut Görseller</label>
+                    <div class="d-flex flex-wrap">
+                        @if (ViewBag.ExistingImages != null)
+                        {
+                            foreach (var image in ViewBag.ExistingImages as List<EntityLayer.Concrete.MediaImage>)
+                            {
+                                <div class="position-relative m-2">
+                                    <img src="@image.ImagePath" class="img-thumbnail" style="width: 150px; height: 150px; object-fit: cover;" />
+                                    <span class="badge badge-primary position-absolute" style="top: 5px; left: 5px;">#@image.OrderNo</span>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p class="text-muted">Görsel bulunamadı.</p>
+                        }
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label class="control-label">Yeni Görseller (Yüklenirse eskiler silinir)</label>
+                    <div class="alert alert-warning">
+                        <small>
+                            <ul>
+                                <li>Yeni 6 görsel yüklerseniz eskiler tamamen silinir.</li>
+                                <li>Lütfen görselleri sıralı olarak yükleyin.</li>
+                                <li>Yalnızca 6 adet görsel yüklenebilir.</li>
+                            </ul>
+                        </small>
+                    </div>
+                    <div class="custom-file mb-3">
+                        <input type="file" class="custom-file-input" id="images" name="Images" multiple accept="image/*">
+                        <label class="custom-file-label" for="images">Dosya seçin...</label>
+                        <span asp-validation-for="Images" class="text-danger"></span>
+                    </div>
+                    <div id="imagePreviewContainer" class="d-flex flex-wrap"></div>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Güncelle</button>
+                    <a asp-controller="Admin" asp-action="Index" class="btn btn-secondary">İptal</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.custom-file-input').on('change', function () {
+                let fileInput = this;
+                let previewContainer = $('#imagePreviewContainer');
+                previewContainer.empty();
+
+                if (fileInput.files.length > 0 && fileInput.files.length !== 6) {
+                    alert('Tam olarak 6 görsel yüklemelisiniz!');
+                    fileInput.value = '';
+                    $(this).next('.custom-file-label').text("Dosya seçin...");
+                    return;
+                }
+
+                let fileNames = [];
+                for (let i = 0; i < fileInput.files.length; i++) {
+                    fileNames.push(fileInput.files[i].name);
+                }
+                $(this).next('.custom-file-label').text(fileNames.join(', '));
+
+                for (let i = 0; i < fileInput.files.length; i++) {
+                    let file = fileInput.files[i];
+                    if (file) {
+                        let reader = new FileReader();
+                        reader.onload = function (e) {
+                            let imgContainer = $('<div class="position-relative m-2"></div>');
+                            let img = $('<img>').addClass('img-thumbnail').css({
+                                'width': '150px',
+                                'height': '150px',
+                                'object-fit': 'cover'
+                            }).attr('src', e.target.result);
+
+                            let orderBadge = $('<span class="badge badge-primary position-absolute" style="top: 5px; left: 5px;">#' + (i + 1) + '</span>');
+
+                            imgContainer.append(img);
+                            imgContainer.append(orderBadge);
+                            previewContainer.append(imgContainer);
+                        }
+                        reader.readAsDataURL(file);
+                    }
+                }
+            });
+        });
+
+    </script>
+}

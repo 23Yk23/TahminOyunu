@@ -1,0 +1,146 @@
+﻿@model List<EntityLayer.Concrete.Category>
+
+@{
+    ViewData["Title"] = "Kategori Yönetimi";
+}
+
+<style>
+    /* Genel stiller aynı kalır */
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        background-color: #1e1e2f;
+        color: white;
+    }
+
+    body {
+        display: flex;
+        flex-direction: column;
+    }
+
+    main {
+        flex: 1;
+        padding: 40px 60px;
+        /* İçeriğin minimum yüksekliğini ayarla ki footer aşağıda kalsın */
+        min-height: calc(100vh - (istediğiniz_footer_yüksekliği_tahmini + üst_boşluklar));
+    }
+
+    .table-container {
+        margin: 20px 40px;
+    }
+
+    table {
+        background-color: #2a2a40;
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    th, td {
+        color: white;
+        vertical-align: middle !important;
+        padding: 10px;
+        text-align: left;
+    }
+
+    th {
+        background-color: #3f3f5a;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 5px;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 5px;
+        text-decoration: none;
+        cursor: pointer;
+        margin-left: 5px;
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #c3e6cb;
+        border-radius: 5px;
+    }
+
+    .alert-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #f5c6cb;
+        border-radius: 5px;
+    }
+</style>
+
+<main>
+    <div class="table-container">
+        <h2>Kategori Yönetimi</h2>
+
+        @if (TempData["CategorySuccessMessage"] != null)
+        {
+            <div class="alert-success">@TempData["CategorySuccessMessage"]</div>
+        }
+        @if (TempData["CategoryErrorMessage"] != null)
+        {
+            <div class="alert-danger">@TempData["CategoryErrorMessage"]</div>
+        }
+
+        <p>
+            <a asp-action="AddCategory" class="btn-success">Yeni Kategori Ekle</a>
+        </p>
+
+        @if (Model != null && Model.Any())
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Adı</th>
+                        <th>Açıklama</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.Id</td>
+                            <td>@item.Name</td>
+                            <td>@item.Description</td>
+                            <td>
+                                <form method="post" asp-action="DeleteCategory" asp-route-id="@item.Id" style="display: inline;">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn-danger" onclick="return confirm('@item.Name kategorisini silmek istediğinize emin misiniz?')">Sil</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>Henüz hiç kategori eklenmemiş.</p>
+        }
+    </div>
+</main>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

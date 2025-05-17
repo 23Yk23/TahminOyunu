@@ -1,0 +1,167 @@
+﻿@model List<EntityLayer.Concrete.Media>
+
+@{
+    ViewData["Title"] = "Oyun Listesi";
+}
+
+<style>
+    /* Stiller aynı kalır */
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        background-color: #1e1e2f;
+        color: white;
+    }
+
+    body {
+        display: flex;
+        flex-direction: column;
+    }
+
+    main {
+        flex: 1;
+        padding: 40px 60px;
+    }
+
+    footer {
+        background-color: #111122;
+        text-align: center;
+        padding: 20px;
+        color: white;
+        margin-top: auto;
+    }
+
+    .table-container {
+        margin: 0 40px;
+    }
+
+    table {
+        background-color: #2a2a40;
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    th, td {
+        color: white;
+        vertical-align: middle !important;
+        padding: 10px;
+    }
+
+    img {
+        border-radius: 8px;
+    }
+
+    .search-bar {
+        margin: 10px 40px 20px 40px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .search-input {
+        margin: 10px 0px 0px 0px;
+        padding: 8px;
+        width: 300px; /* Arama çubuğunu genişlettim */
+        border-radius: 5px;
+        border: none;
+        color: black;
+    }
+
+    .search-button {
+        margin: 10px 0px 0px 0px;
+        padding: 8px 16px;
+        background-color: #007bff;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        cursor: pointer;
+    }
+</style>
+
+<div class="search-bar">
+    <form method="get" asp-action="GameList" asp-controller="Admin" style="display: flex; gap: 10px;">
+        <input type="text" name="search" placeholder="İçerik ara..." class="search-input" value="@Context.Request.Query["search"]" />
+        <button type="submit" class="search-button">Ara</button>
+    </form>
+</div>
+
+<div class="table-container">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Başlık</th>
+                <th>Kategori</th>
+                <th>Aktif Mi?</th>
+                <th>Oluşturulma Tarihi</th>
+                <th>Görsel</th>
+                <th>İşlemler</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Title</td>
+                        <td>@item.Category?.Name</td>
+                        <td>@(item.IsActive ? "Evet" : "Hayır")</td>
+                        <td>@item.CreatedAt.ToString("dd.MM.yyyy")</td>
+                        <td>
+                            @if (item.MediaImages != null && item.MediaImages.Any())
+                            {
+                                <img src="@item.MediaImages.FirstOrDefault().ImagePath" width="100" alt="@item.Title Görseli" />
+                            }
+                            else
+                            {
+                                <span>Görsel Yok</span>
+                            }
+                        </td>
+                        <td>
+                            <a href="@Url.Action("PlayGame", "Home", new { id = item.Id })" class="btn btn-success btn-sm">Oyna</a>
+                            <a href="@Url.Action("Edit", "Admin", new { id = item.Id })" class="btn btn-primary btn-sm">Düzenle</a>
+                            <a href="javascript:void(0);" class="btn btn-danger btn-sm"
+                               onclick="confirmDelete('@item.Id', '@item.Title')">Sil</a>  
+                        </td>
+
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr><td colspan="6">Kayıt Bulunamadı.</td></tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmDelete(id, title) {
+            if (confirm('"' + title + '" başlıklı içeriği silmek istediğinize emin misiniz?')) {
+                // Onay verildiğinde POST isteği göndermek için bir form oluşturup gönderelim
+                var form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/Admin/Delete'; // Silme action'ınızın URL'si
+
+                var hiddenInputId = document.createElement('input');
+                hiddenInputId.type = 'hidden';
+                hiddenInputId.name = 'id';
+                hiddenInputId.value = id;
+
+                // CSRF token'ı eklemeyi unutmayın
+                var antiForgeryToken = document.querySelector('input[name="__RequestVerificationToken"]');
+                if (antiForgeryToken) {
+                    form.appendChild(antiForgeryToken.cloneNode(true));
+                }
+
+                form.appendChild(hiddenInputId);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+    </script>
+    @Html.AntiForgeryToken()
+}

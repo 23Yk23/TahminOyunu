@@ -21,7 +21,7 @@ namespace EntityLayer.Concrete
         public string Description { get; set; }
 
         // İlişkiler
-        public virtual ICollection<Media> Medias { get; set; }
+        public virtual ICollection<Media>? Medias { get; set; }
 
     }
 }

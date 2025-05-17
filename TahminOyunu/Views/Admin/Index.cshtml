@@ -1,0 +1,130 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(135deg, #1e1e2f, #12121c);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        font-family: Arial, sans-serif;
+    }
+
+        body > .container.admin-panel {
+            flex: 1 0 auto; /* İçeriğin büyümesine izin verir */
+            padding: 80px 20px 60px; /* Footer boşluğu için alt padding */
+        }
+
+    footer {
+        flex-shrink: 0; /* Footer küçülmesin */
+    }
+
+    .admin-panel {
+        min-height: calc(100vh - 150px);
+        padding: 0; /* padding yukarıda body>container'da */
+    }
+
+    .panel-card {
+        background-color: #2d2d44;
+        border-radius: 12px;
+        padding: 40px 35px;
+        text-align: center;
+        color: white;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        height: 100%;
+        transition: transform 0.3s ease;
+    }
+
+        .panel-card:hover {
+            transform: scale(1.05);
+        }
+
+        .panel-card i {
+            font-size: 42px;
+            margin-bottom: 20px;
+        }
+
+        .panel-card h5 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .panel-card p {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        .panel-card a.btn {
+            padding: 12px 28px;
+            font-size: 1.1rem;
+        }
+</style>
+
+<div class="container admin-panel">
+    <div class="text-center mb-5">
+        <h2>Yönetici Paneli</h2>
+        <p class="text-light">İçeriklerinizi buradan yönetin.</p>
+    </div>
+
+    <!-- Üst sıra: Medya işlemleri (3 kart yatay) -->
+    <div class="row g-4 mb-4 justify-content-center">
+        <div class="col-md-4">
+            <div class="panel-card">
+                <i class="fas fa-plus-circle text-success"></i>
+                <h5>İçerik Oluştur</h5>
+                <p>Yeni içerik ekleyin.</p>
+                <a href="/Admin/Create" class="btn btn-outline-success">Ekle</a>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="panel-card">
+                <i class="fas fa-edit text-warning"></i>
+                <h5>İçeriği Düzenle</h5>
+                <p>Mevcut içeriklerinizi yönetin.</p>
+                <a href="/Admin/GameList" class="btn btn-outline-warning">Düzenle</a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Alt sıra: Ana sayfa ve çıkış (2 kart yatay, ortalanmış) -->
+    <div class="row g-4 justify-content-center">
+        <div class="col-md-3">
+            <div class="panel-card">
+                <i class="fas fa-home text-info"></i>
+                <h5>Siteye Git</h5>
+                <p>Ana sayfaya dönün.</p>
+                <a href="Home/Index" class="btn btn-outline-info">Git</a>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="panel-card">
+                <i class="fas fa-th-large text-primary"></i>
+                <h5>Kategoriler</h5>
+                <p>Kategori oluştur veya sil.</p>
+                <a href="/Admin/Categories" class="btn btn-outline-primary">Yönet</a>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="panel-card">
+                <i class="fas fa-sign-out-alt text-danger"></i>
+                <h5>Çıkış Yap</h5>
+                <p>Oturumunuzu sonlandırın.</p>
+                <a class="btn btn-outline-danger" href="#" onclick="event.preventDefault(); document.getElementById('logoutForm').submit();">
+                    Çıkış Yap
+                </a>
+                <form id="logoutForm" action="@Url.Action("Logout", "Admin")" method="post" style="display: none;">
+                    @Html.AntiForgeryToken()
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>

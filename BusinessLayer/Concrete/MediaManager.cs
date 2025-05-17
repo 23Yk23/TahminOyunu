@@ -25,7 +25,7 @@ namespace BusinessLayer.Concrete
 
         public void TAdd(Media t)
         {
-           _mediaDal.Insert(t);
+            _mediaDal.Insert(t);
         }
 
         public void TDelete(Media t)
@@ -45,11 +45,15 @@ namespace BusinessLayer.Concrete
 
         public List<Media> GetMediaByCategoryId(int categoryId)
         {
-            return _mediaDal.GetListAll().Where(x => x.CategoryId == categoryId).ToList();
+            return _mediaDal.GetListAll().Where(x => x.CategoryId == categoryId && x.IsActive).ToList();
         }
         public Media TGetByIdWithImages(int id)
         {
             return _mediaDal.GetByIdWithImages(id);
+        }
+        public List<Media> GetListWithCategoryM()
+        {
+            return _mediaDal.GetListWithCategory();
         }
     }
 }
