@@ -273,25 +273,25 @@
                 </div>
             }
 
-            <div class="action-buttons">
-                @if (categoryIdForLink != null && (int)categoryIdForLink > 0)
-                {
-                    <a asp-action="GameList" asp-route-id="@categoryIdForLink" class="btn btn-outline-info">Oyun Listesine Dön</a>
-                }
-                <a asp-action="Index" class="btn btn-outline-secondary">Ana Sayfaya Dön</a>
-            </div>
+       
         }
         else
         {
             <div class="alert alert-danger" role="alert">
                 Oyun bilgileri yüklenirken bir hata oluştu. Lütfen tekrar deneyin.
             </div>
-            <div class="action-buttons">
-                <a asp-action="Index" class="btn btn-outline-secondary">Ana Sayfaya Dön</a>
-            </div>
+           
         }
     </div>
 </div>
+
+<div class="text-center mt-5">
+    <a asp-action="GameList" asp-route-id="@Model.AllImages.FirstOrDefault()?.Media?.CategoryId ?? 1"
+       class="btn btn-outline-info me-3">Oyun Listesine Dön</a>
+    <a asp-action="Index" class="btn btn-outline-secondary">Ana Sayfaya Dön</a>
+</div>
+
+
 
 @section Scripts {
     @{
