@@ -1,6 +1,10 @@
 ﻿@model List<EntityLayer.Concrete.Media>
 
 @{
+    var categoryId = ViewContext.RouteData.Values["id"] != null ? int.Parse(ViewContext.RouteData.Values["id"].ToString()) : 0;
+}
+
+@{
     ViewData["Title"] = "Archive";
 }
 
@@ -66,7 +70,8 @@
     <h2>@ViewBag.CategoryName Kategorisindeki Oyunlar</h2>
 
     <div class="text-center">
-        <a href="/Home/RandomGame" class="btn btn-success">Random Movie</a>
+        <a asp-action="RandomGame" asp-route-id="@categoryId" class="btn btn-success">Random Movie</a>
+
     </div>
     @{
         int displayNumber = Model.Count;

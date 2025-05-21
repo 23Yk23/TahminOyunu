@@ -177,7 +177,7 @@
         
         <h3>Tahmin Oyunu</h3>
         <hr />
-        <!-- Üst Bilgi Satırı: Oklar + Oyun + Tarih -->
+        <!-- st Bilgi Satırı: Oklar + Oyun + Tarih -->
         <div class="d-flex justify-content-between align-items-center px-3 mb-4 text-light" style="font-size: 16px;">
 
             @if (Model.PreviousMediaId != null)
@@ -248,7 +248,7 @@
                     <input type="hidden" asp-for="MediaId" />
 
                     <div class="input-group mb-3">
-                        <input type="text" asp-for="UserGuess" class="form-control" placeholder="Tahmininizi yazın..." aria-label="Tahmin" autofocus />
+                        <input type="text" name="UserGuess" id="UserGuess" class="form-control" placeholder="Tahmininizi yazın..." aria-label="Tahmin" />
                         <div class="input-group-append">
                             <button class="btn btn-primary" type="submit" name="submitButton" value="guess">Tahmin Et</button>
                             @if (Model.Attempts < Model.MaxAttempts)
@@ -298,11 +298,25 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
-        window.onload = function() {
-            var guessInput = doc ument.querySelector('input[name="UserGuess"]');
+        window.onload = function () {
+            var guessInput = document.querySelector('input[name="UserGuess"]');
             if (guessInput && !'@Model.GameOver') {
                 guessInput.focus();
-                    }
-                };
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const guessForm = document.getElementById('guessForm');
+            const guessInput = document.querySelector('input[name="UserGuess"]');
+            const passButton = document.querySelector('button[name="submitButton"][value="pass"]');
+
+            if (guessForm && guessInput && passButton) {
+                passButton.addEventListener('click', function () {
+                    // "Pas Geç" tıklandığında inputun required özelliğini devre dışı bırak
+                    guessInput.removeAttribute('required');
+                    guessInput.value = '';
+                });
+            }
+        });
     </script>
 }

@@ -1,4 +1,4 @@
-using BusinessLayer.Concrete;
+ï»¿using BusinessLayer.Concrete;
 using DataAccessLayer.EntityFramework;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -29,20 +29,43 @@ namespace TahminOyunu.Controllers
         public IActionResult GameList(int id)
         {
             var games = mm.GetMediaByCategoryId(id)
-                          .OrderBy(g => g.CreatedAt) // Yüklenme sırasına göre
+                          .OrderBy(g => g.CreatedAt) // YÃ¼klenme sÄ±rasÄ±na gÃ¶re
                           .ToList();
 
             var category = cm.TGetById(id);
-            ViewBag.CategoryName = category != null ? category.Name : "Kategori bulunamadı";
+            ViewBag.CategoryName = category != null ? category.Name : "Kategori bulunamadÄ±";
 
             return View(games);
         }
-
-        // Oyunu Başlatma (GET)
-        [HttpGet]
-        public IActionResult PlayGame(int id) // mediaId'yi parametre olarak alıyoruz
+        //Random
+        public IActionResult RandomGame(int id)
         {
-            var media = mm.TGetByIdWithImages(id); // Media'yı resimleriyle birlikte getiriyoruz
+            Console.WriteLine("RandomGame Ã§aÄŸrÄ±ldÄ±. Kategori ID: " + id);
+
+            var medyalar = mm.GetMediaByCategoryId(id);
+            Console.WriteLine("Kategoriye ait medya sayÄ±sÄ±: " + medyalar.Count);
+
+            var randomMedia = medyalar
+                                .OrderBy(m => Guid.NewGuid())
+                                .FirstOrDefault();
+
+            if (randomMedia == null)
+            {
+                Console.WriteLine("Rastgele medya bulunamadÄ±.");
+                TempData["ErrorMessage"] = "Bu kategoriye ait rastgele bir oyun bulunamadÄ±.";
+                return RedirectToAction("GameList", new { id = id });
+            }
+
+            Console.WriteLine("SeÃ§ilen rastgele medya ID: " + randomMedia.Id);
+            return RedirectToAction("PlayGame", new { id = randomMedia.Id });
+        }
+
+
+        // Oyunu BaÅŸlatma (GET)
+        [HttpGet]
+        public IActionResult PlayGame(int id) // mediaId'yi parametre olarak alÄ±yoruz
+        {
+            var media = mm.TGetByIdWithImages(id); // Media'yÄ± resimleriyle birlikte getiriyoruz
 
             var allInCategory = mm.GetMediaByCategoryId(media.CategoryId)
                       .OrderBy(m => m.CreatedAt)
@@ -58,21 +81,21 @@ namespace TahminOyunu.Controllers
 
             if (media == null || !media.MediaImages.Any())
             {
-                TempData["ErrorMessage"] = "Oyun başlatılamadı veya bu içeriğe ait resim bulunamadı. Lütfen başka bir oyun seçin.";
-                return RedirectToAction("GameList", new { id = ViewBag.PreviousCategoryId ?? 0 }); // Eğer bir önceki kategori ID'si varsa oraya, yoksa Index'e
-                                                                                                   // veya uygun bir hata sayfasına yönlendir.
-                                                                                                   // Ya da TempData["PreviousCategoryId"] = media.CategoryId; gibi bir değer tutuluyorsa
+                TempData["ErrorMessage"] = "Oyun baÅŸlatÄ±lamadÄ± veya bu iÃ§eriÄŸe ait resim bulunamadÄ±. LÃ¼tfen baÅŸka bir oyun seÃ§in.";
+                return RedirectToAction("GameList", new { id = ViewBag.PreviousCategoryId ?? 0 }); // EÄŸer bir Ã¶nceki kategori ID'si varsa oraya, yoksa Index'e
+                                                                                                   // veya uygun bir hata sayfasÄ±na yÃ¶nlendir.
+                                                                                                   // Ya da TempData["PreviousCategoryId"] = media.CategoryId; gibi bir deÄŸer tutuluyorsa
             }
 
-            // Eğer bir kategoriye geri dönülecekse CategoryId'yi ViewBag'e ata
+            // EÄŸer bir kategoriye geri dÃ¶nÃ¼lecekse CategoryId'yi ViewBag'e ata
             ViewBag.PreviousCategoryId = media.CategoryId;
 
 
             var sortedImages = media.MediaImages.OrderBy(img => img.OrderNo).ToList();
 
-            if (!sortedImages.Any()) // Tekrar kontrol, TGetByIdWithImages sonrası da resim olmayabilir.
+            if (!sortedImages.Any()) // Tekrar kontrol, TGetByIdWithImages sonrasÄ± da resim olmayabilir.
             {
-                TempData["ErrorMessage"] = "Bu içeriğe ait gösterilecek resim bulunamadı.";
+                TempData["ErrorMessage"] = "Bu iÃ§eriÄŸe ait gÃ¶sterilecek resim bulunamadÄ±.";
                 return RedirectToAction("GameList", new { id = media.CategoryId });
             }
 
@@ -84,7 +107,7 @@ namespace TahminOyunu.Controllers
                 AllImages = sortedImages,
                 CurrentImagePath = sortedImages.First().ImagePath,
                 CurrentImageIndex = 0,
-                Attempts = 1, // İlk deneme
+                Attempts = 1, // Ä°lk deneme
                 IsCorrect = false,
                 GameOver = false,
                 Message = "",
@@ -97,32 +120,32 @@ namespace TahminOyunu.Controllers
 
             };
 
-            // Döngüsel referansları görmezden gelmek için JsonSerializerSettings oluşturun
+            // DÃ¶ngÃ¼sel referanslarÄ± gÃ¶rmezden gelmek iÃ§in JsonSerializerSettings oluÅŸturun
             var settings = new JsonSerializerSettings
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             };
 
-            // Oyun durumunu session'da saklayın, oluşturulan ayarları kullanarak
+            // Oyun durumunu session'da saklayÄ±n, oluÅŸturulan ayarlarÄ± kullanarak
             HttpContext.Session.SetString($"PlayGameViewModel_{media.Id}", JsonConvert.SerializeObject(viewModel, settings));
 
             return View(viewModel);
         }
 
-        // Tahmin Yapma veya Pas Geçme (POST)
+        // Tahmin Yapma veya Pas GeÃ§me (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult PlayGame(PlayGameViewModel submittedModel, string submitButton) // Gelen model ve submitButton
         {
 
             // Session'dan mevcut oyun durumunu al
-            var sessionKey = $"PlayGameViewModel_{submittedModel.MediaId}"; // Doğru MediaId'yi kullan
+            var sessionKey = $"PlayGameViewModel_{submittedModel.MediaId}"; // DoÄŸru MediaId'yi kullan
             var sessionData = HttpContext.Session.GetString(sessionKey);
 
             if (string.IsNullOrEmpty(sessionData))
             {
-                TempData["ErrorMessage"] = "Oyun oturumu bulunamadı. Lütfen oyunu tekrar başlatın.";
-                // Hangi kategoriye döneceğini bilmek zor, bu yüzden ana sayfaya veya genel bir oyun listesine yönlendirme
+                TempData["ErrorMessage"] = "Oyun oturumu bulunamadÄ±. LÃ¼tfen oyunu tekrar baÅŸlatÄ±n.";
+                // Hangi kategoriye dÃ¶neceÄŸini bilmek zor, bu yÃ¼zden ana sayfaya veya genel bir oyun listesine yÃ¶nlendirme
                 return RedirectToAction("Index");
             }
 
@@ -137,17 +160,17 @@ namespace TahminOyunu.Controllers
                 return View(viewModel);
             }
 
-            // Gelen tahmini ViewModel'e ata (eğer formdan direkt bağlanmıyorsa)
+            // Gelen tahmini ViewModel'e ata (eÄŸer formdan direkt baÄŸlanmÄ±yorsa)
             viewModel.UserGuess = submittedModel.UserGuess;
 
 
-            // ViewBag.PreviousCategoryId'yi POST işleminden sonra da View'a taşımak gerekebilir,
-            // eğer View bu bilgiye ihtiyaç duyuyorsa (örneğin "Oyun Listesine Dön" linki için).
+            // ViewBag.PreviousCategoryId'yi POST iÅŸleminden sonra da View'a taÅŸÄ±mak gerekebilir,
+            // eÄŸer View bu bilgiye ihtiyaÃ§ duyuyorsa (Ã¶rneÄŸin "Oyun Listesine DÃ¶n" linki iÃ§in).
             // Session'dan okunan viewModel.AllImages.FirstOrDefault()?.Media?.CategoryId gibi bir yolla bulunabilir
-            // veya GET sırasında Session'a ayrıca kaydedilebilir.
-            // Şimdilik en basit yol, media'nın CategoryId'sini de viewModel içinde saklamak veya
-            // GET'teki gibi tekrar veritabanından çekmemek için Session'daki viewModel'den almak.
-            // Media'yı tekrar çekmemek için CategoryId'yi PlayGameViewModel'e ekleyebiliriz.
+            // veya GET sÄ±rasÄ±nda Session'a ayrÄ±ca kaydedilebilir.
+            // Åimdilik en basit yol, media'nÄ±n CategoryId'sini de viewModel iÃ§inde saklamak veya
+            // GET'teki gibi tekrar veritabanÄ±ndan Ã§ekmemek iÃ§in Session'daki viewModel'den almak.
+            // Media'yÄ± tekrar Ã§ekmemek iÃ§in CategoryId'yi PlayGameViewModel'e ekleyebiliriz.
             // Ya da:
             if (viewModel.AllImages.Any() && viewModel.AllImages.First().Media != null) // Kontrol ekleyelim
             {
@@ -155,7 +178,7 @@ namespace TahminOyunu.Controllers
             }
             else
             {
-                // Alternatif olarak, mediaId üzerinden CategoryId'yi tekrar çekebiliriz
+                // Alternatif olarak, mediaId Ã¼zerinden CategoryId'yi tekrar Ã§ekebiliriz
                 var mediaForCategory = mm.TGetById(viewModel.MediaId);
                 if (mediaForCategory != null) ViewBag.PreviousCategoryId = mediaForCategory.CategoryId;
             }
@@ -163,12 +186,12 @@ namespace TahminOyunu.Controllers
 
             if (viewModel.GameOver)
             {
-                return View(viewModel); // Oyun zaten bitmişse bir şey yapma, mevcut durumu göster
+                return View(viewModel); // Oyun zaten bitmiÅŸse bir ÅŸey yapma, mevcut durumu gÃ¶ster
             }
 
             bool guessedCorrectly = false;
 
-            if (submitButton == "guess") // Tahmin butonu tıklandıysa
+            if (submitButton == "guess") // Tahmin butonu tÄ±klandÄ±ysa
             {
                 if (!string.IsNullOrWhiteSpace(viewModel.UserGuess)) // viewModel.UserGuess'i kullan
                 {
@@ -178,8 +201,8 @@ namespace TahminOyunu.Controllers
                         viewModel.IsCorrect = true;
                         viewModel.GameOver = true;
                         viewModel.Message = "Bildiniz!";
-                        // Doğru bilince son resmi göster (isteğe bağlı)
-                        if (viewModel.AllImages.Any()) // Resim listesinin boş olmadığından emin ol
+                        // DoÄŸru bilince son resmi gÃ¶ster (isteÄŸe baÄŸlÄ±)
+                        if (viewModel.AllImages.Any()) // Resim listesinin boÅŸ olmadÄ±ÄŸÄ±ndan emin ol
                         {
                             viewModel.CurrentImagePath = viewModel.AllImages.Last().ImagePath;
                             viewModel.CurrentImageIndex = viewModel.AllImages.Count - 1;
@@ -187,45 +210,52 @@ namespace TahminOyunu.Controllers
                     }
                     else
                     {
-                        viewModel.Message = "Yanlış tahmin!"; // Yanlış tahminde mesaj
+                        viewModel.Message = "YanlÄ±ÅŸ tahmin!"; // YanlÄ±ÅŸ tahminde mesaj
                     }
                 }
                 else
                 {
-                    viewModel.Message = "Lütfen bir tahmin girin."; // Boş tahmin durumu
+                    viewModel.Message = "LÃ¼tfen bir tahmin girin."; // BoÅŸ tahmin durumu
                 }
             }
-            // "pass" (Pas geç) veya yanlış tahmin durumunda (veya boş tahmin) bir sonraki resme geç
-            if (!guessedCorrectly) // Eğer doğru bilinmediyse (yanlış tahmin VEYA pas geçme ise)
+
+            // "pass" (Pas geÃ§) veya yanlÄ±ÅŸ tahmin durumunda (veya boÅŸ tahmin) bir sonraki resme geÃ§
+            if (!guessedCorrectly) // EÄŸer doÄŸru bilinmediyse (yanlÄ±ÅŸ tahmin veya pas geÃ§ildiyse)
             {
-                if (submitButton == "pass" || (submitButton == "guess" && !guessedCorrectly)) // Sadece pas veya yanlış tahminde attempt artır
+                // Sadece yanlÄ±ÅŸ tahminde deneme hakkÄ±nÄ± artÄ±r
+                if (submitButton == "guess")
                 {
                     viewModel.Attempts++;
                 }
 
-                if (viewModel.Attempts <= viewModel.MaxAttempts && viewModel.CurrentImageIndex < viewModel.AllImages.Count - 1)
+                // Deneme hakkÄ± varsa ve son resme gelinmediyse â†’ bir sonraki resme geÃ§
+                if (viewModel.Attempts < viewModel.MaxAttempts &&
+                    viewModel.CurrentImageIndex + 1 < viewModel.AllImages.Count)
                 {
-                    // Eğer pas geçiliyorsa veya yanlış tahminse ve hala deneme hakkı varsa bir sonraki resme geç
-                    if (submitButton == "pass" || (submitButton == "guess" && !guessedCorrectly))
+                    viewModel.CurrentImageIndex++;
+                    viewModel.CurrentImagePath = viewModel.AllImages[viewModel.CurrentImageIndex].ImagePath;
+
+                    if (submitButton == "pass")
                     {
-                        viewModel.CurrentImageIndex++;
-                        viewModel.CurrentImagePath = viewModel.AllImages[viewModel.CurrentImageIndex].ImagePath;
-                        if (submitButton == "pass") viewModel.Message = ""; // Pas geçince önceki mesajı temizle
+                        viewModel.Message = ""; // Pas geÃ§ildiÄŸinde mesaj temizle
                     }
                 }
-                else // Deneme hakkı bitti veya son resme gelindi ve hala bilinmedi (veya pas geçildi)
+                else
                 {
+                    // Oyun bitti: ya deneme hakkÄ± bitti ya da son gÃ¶rsele gelindi
                     viewModel.GameOver = true;
-                    viewModel.Message = $"Bilemediniz! Doğru Cevap: {viewModel.MediaTitle}";
+                    viewModel.Message = $"Bilemediniz! DoÄŸru Cevap: {viewModel.MediaTitle}";
+
                     if (viewModel.AllImages.Any())
                     {
-                        viewModel.CurrentImagePath = viewModel.AllImages.Last().ImagePath; // Son resmi göster
+                        viewModel.CurrentImagePath = viewModel.AllImages.Last().ImagePath;
                         viewModel.CurrentImageIndex = viewModel.AllImages.Count - 1;
                     }
                 }
             }
 
-            // Güncellenmiş oyun durumunu session'a kaydet
+
+            // GÃ¼ncellenmiÅŸ oyun durumunu session'a kaydet
             HttpContext.Session.SetString(sessionKey, JsonConvert.SerializeObject(viewModel));
 
             return View(viewModel);
