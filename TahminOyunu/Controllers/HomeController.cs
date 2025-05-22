@@ -180,14 +180,15 @@ namespace TahminOyunu.Controllers
 
             if (submitButton == "guess") // Tahmin butonu tıklandıysa
             {
-                if (!string.IsNullOrWhiteSpace(viewModel.UserGuess)) // viewModel.UserGuess'i kullan
+                if (!string.IsNullOrWhiteSpace(viewModel.UserGuess)) // Kullanıcı giriş yaptıysa
                 {
-                    if (viewModel.UserGuess.Trim().Equals(viewModel.MediaTitle.Trim(), System.StringComparison.OrdinalIgnoreCase))
+                    if (viewModel.UserGuess.Trim().Equals(viewModel.MediaTitle.Trim(), StringComparison.OrdinalIgnoreCase))
                     {
                         guessedCorrectly = true;
                         viewModel.IsCorrect = true;
                         viewModel.GameOver = true;
                         viewModel.Message = "Bildiniz!";
+
                         if (viewModel.AllImages.Any())
                         {
                             viewModel.CurrentImagePath = viewModel.AllImages.Last().ImagePath;
@@ -201,7 +202,8 @@ namespace TahminOyunu.Controllers
                 }
                 else
                 {
-                    viewModel.Message = "Lütfen bir tahmin girin.";
+                    // Giriş boşsa, pas geç gibi davran
+                    viewModel.Message = ""; // İstersen 'Pas geçildi' yazısı da verilebilir
                 }
             }
 
@@ -243,7 +245,6 @@ namespace TahminOyunu.Controllers
 
 
 
-        // Bu metot hem film hem de dizi sonuçlarını döndürecek
         [HttpGet]
         public async Task<JsonResult> SearchMoviesAndTv(string term)
         {
@@ -266,6 +267,7 @@ namespace TahminOyunu.Controllers
                 var data = JObject.Parse(jsonString);
 
                 var results = new List<object>();
+                var uniqueTitles = new HashSet<string>(StringComparer.OrdinalIgnoreCase); // Başlıkları büyük/küçük harf duyarsız olarak tutmak için
 
                 if (data["results"] is JArray items)
                 {
@@ -284,8 +286,8 @@ namespace TahminOyunu.Controllers
                             title = item["name"]?.ToString();
                         }
 
-                        // Sadece geçerli bir başlık varsa listeye ekle
-                        if (!string.IsNullOrEmpty(title))
+                        // Sadece geçerli bir başlık varsa ve daha önce eklenmemişse listeye ekle
+                        if (!string.IsNullOrEmpty(title) && uniqueTitles.Add(title)) // uniqueTitles.Add() metodu, öğe başarıyla eklenirse true döndürür, zaten varsa false döndürür.
                         {
                             // jQuery UI Autocomplete için { label: "Görünecek Metin", value: "Input'a Yazılacak Metin" } formatında döndürüyoruz
                             results.Add(new { label = title, value = title });
