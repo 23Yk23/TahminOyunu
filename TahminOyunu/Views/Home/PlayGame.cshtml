@@ -8,26 +8,26 @@
     body {
         margin: 0;
         padding: 0;
-        background: linear-gradient(135deg, #1e1e2f, #12121c);
+        background: linear-gradient(135deg, #1e1e2f, #12121c); /* Sitenin ana arka planı */
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         color: white;
         display: flex;
         flex-direction: column;
-        min-height: 100vh; /* Sayfanın en az ekran yüksekliğinde olmasını sağlar */
+        min-height: 100vh;
     }
 
     .body-container {
-        flex: 1; /* İçeriğin ana alanı kaplamasını sağlar */
+        flex: 1;
         display: flex;
-        justify-content: center; /* Yatayda ortalar */
-        align-items: center; /* Dikeyde ortalar */
+        justify-content: center;
+        align-items: center;
         padding: 18px 0;
     }
 
     .game-container {
-        max-width: 900px; /* Yatay genişliği daha da artırdım */
-        padding: 35px; /* İç boşluğu artırdım */
-        background-color: #2c2c3e;
+        max-width: 900px;
+        padding: 35px;
+        background-color: #2c2c3e; /* Oyun kutusunun arka planı */
         border-radius: 10px;
         box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     }
@@ -47,7 +47,7 @@
     .image-container img {
         max-width: 100%;
         height: auto;
-        max-height: 50000000000000000000px; /* Dikey yüksekliği biraz daha artırdım */
+        max-height: 50000000000000000000px;
         display: block;
         margin: 25px auto;
         border: 1px solid #44445a;
@@ -170,6 +170,63 @@
             margin: 0 25px;
             font-size: 22px;
         }
+
+    /* GÜNCEL JQUERY UI AUTOCOMPLETE STİLLERİ (Arka plan beyaz, yazı koyu, kenarlık yok) */
+    .ui-autocomplete {
+        max-height: 250px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        background-color: #ffffff; /* Arka planı beyaz yaptık */
+        border: none !important; /* Dışındaki tüm kenarlıkları kaldırdık */
+        outline: none !important; /* Odak çemberini kaldırdık */
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.4); /* Gölgeyi koruduk */
+        z-index: 1000;
+        padding: 5px 0;
+    }
+
+    .ui-menu-item {
+        padding: 12px 18px;
+        font-size: 18px;
+        color: #333333; /* Film isimleri için koyu gri/siyah renk */
+        cursor: pointer;
+        transition: background-color 0.2s ease, color 0.2s ease;
+        border-bottom: 1px solid #f0f0f0; /* Açık renkli ayırıcı çizgi */
+    }
+
+    .ui-menu-item:last-child {
+        border-bottom: none;
+    }
+
+    .ui-menu-item:hover,
+    .ui-state-active {
+        background-color: #e0e0e0 !important; /* Üzerine gelince veya seçilince açık gri vurgu */
+        color: #000000 !important; /* Vurgulandığında siyah yazı */
+        font-weight: bold;
+        border-radius: 5px;
+        margin: 0 5px;
+        border: none !important; 
+        outline: none !important;
+    }
+
+    /* Scrollbar stili */
+    .ui-autocomplete::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .ui-autocomplete::-webkit-scrollbar-track {
+        background: #f0f0f0; /* Beyaz arka planla uyumlu track */
+        border-radius: 10px;
+    }
+
+    .ui-autocomplete::-webkit-scrollbar-thumb {
+        background: #cccccc; /* Açık gri thumb */
+        border-radius: 10px;
+    }
+
+    .ui-autocomplete::-webkit-scrollbar-thumb:hover {
+        background: #aaaaaa;
+    }
 </style>
 
 <div class="container body-container">
@@ -177,7 +234,6 @@
         
         <h3>Tahmin Oyunu</h3>
         <hr />
-        <!-- st Bilgi Satırı: Oklar + Oyun + Tarih -->
         <div class="d-flex justify-content-between align-items-center px-3 mb-4 text-light" style="font-size: 16px;">
 
             @if (Model.PreviousMediaId != null)
@@ -208,10 +264,6 @@
 
         </div>
 
-
-
-</p>
-                    <!--Kutucuklar görseler-->
         @if (Model != null)
         {
             <div class="image-container">
@@ -231,7 +283,7 @@
                             <input type="hidden" name="SelectedIndex" value="@i" />
                             <button type="submit"
                                     class="btn @(isActive ? "btn-primary" : "btn-outline-secondary")"
-                            @(isVisible ? "" : "disabled")>
+                                @(isVisible ? "" : "disabled")>
                                 @(i + 1)
                             </button>
                         </form>
@@ -286,7 +338,7 @@
             <div class="alert alert-danger" role="alert">
                 Oyun bilgileri yüklenirken bir hata oluştu. Lütfen tekrar deneyin.
             </div>
-           
+            
         }
     </div>
 </div>
@@ -295,6 +347,13 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+
     <script>
         window.onload = function () {
             var guessInput = document.querySelector('input[name="UserGuess"]');
@@ -308,13 +367,37 @@
             const guessInput = document.querySelector('input[name="UserGuess"]');
             const passButton = document.querySelector('button[name="submitButton"][value="pass"]');
 
-            if (guessForm && guessInput && passButton) {
+            if (guessInput && passButton) {
                 passButton.addEventListener('click', function () {
-                    // "Pas Geç" tıklandığında inputun required özelliğini devre dışı bırak
                     guessInput.removeAttribute('required');
                     guessInput.value = '';
                 });
             }
+
+            $(function () {
+                $("#UserGuess").autocomplete({
+                    source: function (request, response) {
+                        $.ajax({
+                            // Controller'daki yeni metodu çağırıyoruz
+                            url: "@Url.Action("SearchMoviesAndTv", "Home")",
+                            dataType: "json",
+                            data: {
+                                term: request.term // Kullanıcının girdiği metin
+                            },
+                            success: function (data) {
+                                // Controller'dan gelen veriyi doğrudan kullanıyoruz
+                                // Çünkü zaten { label: "...", value: "..." } formatında geliyor
+                                response(data);
+                            },
+                            error: function (xhr, status, error) {
+                                console.error("Otomatik tamamlama hatası:", status, error);
+                                response([]); // Hata durumunda boş liste döndür
+                            }
+                        });
+                    },
+                    minLength: 2 // En az 2 karakter girildiğinde arama yap
+                });
+            });
         });
     </script>
 }

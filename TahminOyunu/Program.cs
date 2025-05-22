@@ -11,7 +11,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDistributedMemoryCache(); // Session state'i bellekte saklamak için gereklidir.
                                               // Üretim ortamlarý için Redis veya SQL Server gibi daha ölçeklenebilir
                                               // bir daðýtýk cache düþünebilirsiniz.
-
+builder.Services.AddHttpClient();//api yaparken ekledim
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30); // Oturumun boþta kalma süresi

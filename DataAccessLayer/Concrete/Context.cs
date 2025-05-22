@@ -1,6 +1,7 @@
 ﻿
 using EntityLayer.Concrete;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -14,8 +15,15 @@ namespace DataAccessLayer.Concrete
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("server=DESKTOP-S97J6AK;database=TahminOyunuDB; " +
-                "integrated security=true;TrustServerCertificate=true");
+            if (!optionsBuilder.IsConfigured)
+            {
+                IConfiguration config = new ConfigurationBuilder()
+                    .AddUserSecrets<Context>() // Eğer Program.cs yoksa, kendi DbContext class'ının adını yaz
+                    .Build();
+
+                string connectionString = config["ConnectionString"];
+                optionsBuilder.UseSqlServer(connectionString);
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

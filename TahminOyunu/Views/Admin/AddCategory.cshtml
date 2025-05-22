@@ -76,6 +76,23 @@
     .text-danger {
         color: #dc3545;
     }
+
+    .fixed-button {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+    }
+
+        .fixed-button:hover {
+            background-color: #0056b3;
+        }
 </style>
 
 <div class="form-container">
@@ -97,6 +114,12 @@
         <button type="submit" class="btn-primary">Kaydet</button>
         <a asp-action="Categories" class="btn-secondary">İptal</a>
     </form>
+</div>
+<!-- Sayfanın en altına sabitlenmiş buton -->
+<div>
+    <button type="button" class="fixed-button" onclick="location.href='@Url.Action("Index", "Admin")'">
+        Panele Dön
+    </button>
 </div>
 
 @section Scripts {
