@@ -22,6 +22,9 @@ namespace TahminOyunu.Models // YourProjectName kısmını kendi projenizin name
         public string UserGuess { get; set; } // Formdan gelecek tahmin
         public bool IsCorrect { get; set; }
         public bool GameOver { get; set; }
+
+        public int? CategoryId { get; set; } // 🔁 Ek kategori ID
+
         public string Message { get; set; }
         public int MaxAttempts { get; } = 6;
     }

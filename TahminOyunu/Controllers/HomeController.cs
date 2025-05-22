@@ -114,7 +114,8 @@ namespace TahminOyunu.Controllers
                 AllImages = sortedImages,
                 CurrentImagePath = sortedImages.First().ImagePath,
                 CurrentImageIndex = 0,
-                Attempts = 1, // İlk deneme
+                Attempts = 0, // İlk deneme
+                CategoryId = media.CategoryId, // ✅ ViewModel'e doğrudan kategori ID gönderiyoruz
                 IsCorrect = false,
                 GameOver = false,
                 Message = "",

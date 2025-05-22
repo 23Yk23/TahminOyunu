@@ -1,7 +1,8 @@
 ﻿@model TahminOyunu.Models.PlayGameViewModel
 @{
     ViewData["Title"] = "Oyunu Oyna";
-    var categoryIdForLink = ViewBag.PreviousCategoryId;
+    var categoryIdForLink = Model.CategoryId;
+
 }
 
 <style>
