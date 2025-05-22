@@ -276,7 +276,8 @@
                     @for (int i = 0; i < Model.AllImages.Count; i++)
                     {
                         var isActive = i == Model.CurrentImageIndex;
-                        var isVisible = i <= Model.Attempts - 1 || Model.GameOver;
+                        var isVisible = i <= Model.Attempts || Model.GameOver;
+
 
                         <form asp-action="PlayGame" method="post">
                             <input type="hidden" name="submitButton" value="select" />
