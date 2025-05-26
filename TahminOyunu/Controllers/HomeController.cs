@@ -151,6 +151,7 @@ namespace TahminOyunu.Controllers
 
             var viewModel = JsonConvert.DeserializeObject<PlayGameViewModel>(sessionData);
 
+            // Sadece fotoğraf seçimi için olan istekler
             if (submitButton == "select")
             {
                 viewModel.CurrentImageIndex = submittedModel.SelectedIndex;
@@ -216,9 +217,11 @@ namespace TahminOyunu.Controllers
                 }
 
                 if (viewModel.Attempts < viewModel.MaxAttempts &&
-                    viewModel.CurrentImageIndex + 1 < viewModel.AllImages.Count)
+                    viewModel.Attempts < viewModel.AllImages.Count) // Attempts ile karşılaştır
                 {
-                    viewModel.CurrentImageIndex++;
+                    // ✅ DÜZELTME: Tahmin yapıldığında attempts seviyesindeki fotoğrafı göster
+                    // Kullanıcı hangi fotoğrafı seçmiş olursa olsun, attempts seviyesine git
+                    viewModel.CurrentImageIndex = viewModel.Attempts;
                     viewModel.CurrentImagePath = viewModel.AllImages[viewModel.CurrentImageIndex].ImagePath;
 
                     if (submitButton == "pass")
