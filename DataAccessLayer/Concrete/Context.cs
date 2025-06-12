@@ -17,13 +17,9 @@ namespace DataAccessLayer.Concrete
         {
             if (!optionsBuilder.IsConfigured)
             {
-                IConfiguration config = new ConfigurationBuilder()
-                    .AddUserSecrets<Context>() // Eğer Program.cs yoksa, kendi DbContext class'ının adını yaz
-                    .Build();
-
-                string connectionString = config["ConnectionString"];
-                optionsBuilder.UseSqlServer(connectionString);
+                optionsBuilder.UseSqlite("Data Source=guessframe.db");
             }
+
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

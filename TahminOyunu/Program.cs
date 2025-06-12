@@ -1,11 +1,18 @@
+using DataAccessLayer.Concrete;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using TahminOyunu.Services;
 using Microsoft.AspNetCore.Mvc.Authorization;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddDbContext<Context>();
+
 
 // Session ve daðýtýk cache servislerini ekleyin <3-15 yeni ekledim>
 builder.Services.AddDistributedMemoryCache(); // Session state'i bellekte saklamak için gereklidir.
@@ -38,6 +45,7 @@ builder.Services.AddMvc(config =>
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<FirebaseService>();
 
 var app = builder.Build();
 
@@ -63,5 +71,6 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
 
 app.Run();

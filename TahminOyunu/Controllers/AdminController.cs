@@ -9,11 +9,15 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using TahminOyunu.Models;
 using DataAccessLayer.Abstract;
+using Microsoft.EntityFrameworkCore;
 
 namespace TahminOyunu.Controllers
 {
+
     public class AdminController : Controller
     {
+        private readonly Context _context;
+
         private readonly IWebHostEnvironment _webHostEnvironment; //içerik ekleme kısmı için
 
         MediaManager mm = new MediaManager(new EfMediaRepository());
@@ -23,6 +27,31 @@ namespace TahminOyunu.Controllers
         public AdminController(IWebHostEnvironment webHostEnvironment)
         {
             _webHostEnvironment = webHostEnvironment;
+            _context = new Context();
+
+
+        }
+        // GET: Admin/AddCategory
+        [HttpGet]
+        public IActionResult AddCategory()
+        {
+            return View();
+        }
+
+        // POST: Admin/AddCategory
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddCategory(Category category)
+        {
+            if (ModelState.IsValid)
+            {
+                category.CreatedAt = DateTime.Now;
+                _context.Categories.Add(category);
+                _context.SaveChanges();
+                return RedirectToAction("Categories"); // Kategori listesine yönlendirme
+            }
+
+            return View(category); // Hatalıysa formu geri döndür
         }
 
         public IActionResult Index()
@@ -317,24 +346,9 @@ namespace TahminOyunu.Controllers
             return View(categories);
         }
 
-        [HttpGet]
-        public IActionResult AddCategory()
-        {
-            return View();
-        }
+       
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult AddCategory(Category category)
-        {
-            if (ModelState.IsValid) // Doğrulamayı burada yapın
-            {
-                cm.TAdd(category);
-                TempData["CategorySuccessMessage"] = "Kategori başarıyla eklendi.";
-                return RedirectToAction("Categories");
-            }
-            return View(category);
-        }
+        
 
         [HttpPost]
         [ValidateAntiForgeryToken]

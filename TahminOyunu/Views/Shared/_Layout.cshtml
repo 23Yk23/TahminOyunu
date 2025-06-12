@@ -16,5 +16,7 @@
     @RenderBody()
     @await Html.PartialAsync("_footer")
     @await RenderSectionAsync("Scripts", required: false)
+    <script type="module" src="~/js/firebase.js"></script>
+
 </body>
 </html>
