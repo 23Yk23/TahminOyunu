@@ -362,6 +362,6 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
-# Firebase gizli dosyası
-TahminOyunu/firebase/guessframe-74018-firebase-adminsdk-fbsvc-39bd0c7d47.json
+
+TahminOyunu/firebase/
 
