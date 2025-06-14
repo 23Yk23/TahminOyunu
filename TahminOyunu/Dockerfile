@@ -4,9 +4,19 @@ EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY ["TahminOyunu.csproj", "."]
-RUN dotnet restore "TahminOyunu.csproj"
+
+# Bağımlı projeleri ve ana projeyi kopyala
+COPY ["BusinessLayer/BusinessLayer.csproj", "BusinessLayer/"]
+COPY ["DataAccessLayer/DataAccessLayer.csproj", "DataAccessLayer/"]
+COPY ["EntityLayer/EntityLayer.csproj", "EntityLayer/"]
+COPY ["TahminOyunu/TahminOyunu.csproj", "TahminOyunu/"]
+
+RUN dotnet restore "TahminOyunu/TahminOyunu.csproj"
+
+# Tüm solution içeriğini kopyala
 COPY . .
+
+WORKDIR "/src/TahminOyunu"
 RUN dotnet build "TahminOyunu.csproj" -c Release -o /app/build
 
 FROM build AS publish
