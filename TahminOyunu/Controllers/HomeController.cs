@@ -49,7 +49,8 @@ namespace TahminOyunu.Controllers
             var category = cm.TGetById(id);
             ViewBag.CategoryName = category != null ? category.Name : "Kategori bulunamadı";
 
-            return View(games);
+            return View("GameList", games); // ✅ Gerekli view adıyla
+
         }
         //Random
         public IActionResult RandomGame(int id)

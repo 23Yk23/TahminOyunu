@@ -1,0 +1,26 @@
+﻿@model List<EntityLayer.Concrete.MediaImage>
+
+@{
+    ViewBag.Title = "Görseller";
+    var mediaId = ViewBag.MediaId ?? 1;
+}
+
+<h2>Medya ID @mediaId için Görseller</h2>
+
+<div style="display:flex; flex-wrap:wrap; gap:20px; justify-content:center;">
+    @foreach (var image in Model)
+    {
+        <div style="border:1px solid gray; padding:10px; border-radius:10px;">
+            <img src="@image.ImagePath" alt="görsel" width="200" style="border-radius:8px;" />
+            <p>Sıra: @image.OrderNo</p>
+
+            <form asp-action="DeleteImage" method="post">
+                <input type="hidden" name="imageId" value="@image.Id" />
+                <input type="hidden" name="mediaId" value="@mediaId" />
+                <button type="submit">Sil</button>
+            </form>
+        </div>
+    }
+</div>
+
+<a href="/Media/Upload?mediaId=@mediaId">↩ Geri Dön</a>

@@ -2,6 +2,7 @@
 using Google.Cloud.Storage.V1;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Configuration;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -22,10 +23,6 @@ namespace TahminOyunu.Services
             var fullPath = Path.Combine(Directory.GetCurrentDirectory(), relativePath);
             GoogleCredential credential = GoogleCredential.FromFile(fullPath);
 
-
-
-            // JSON dosyasını buradan yüklüyoruz
-
             _storageClient = StorageClient.Create(credential);
         }
 
@@ -33,6 +30,21 @@ namespace TahminOyunu.Services
         {
             await _storageClient.UploadObjectAsync(_bucket, fileName, contentType, fileStream);
             return $"https://storage.googleapis.com/{_bucket}/{fileName}";
+            
         }
+        public async Task DeleteFileAsync(string fileName)
+        {
+            try
+            {
+                await _storageClient.DeleteObjectAsync(_bucket, fileName);
+            }
+            catch (Google.GoogleApiException ex) when (ex.HttpStatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                // Dosya zaten yok, sessizce geç
+            }
+        }
+
+
     }
+
 }

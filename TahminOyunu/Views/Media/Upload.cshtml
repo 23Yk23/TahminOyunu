@@ -1,5 +1,6 @@
 ﻿@{
     ViewBag.Title = "Fotoğraf Yükle";
+    var mediaId = ViewBag.MediaId ?? 1;
 }
 <style>
     body {
@@ -25,12 +26,6 @@
         text-align: center;
     }
 
-    .upload-container h2 {
-        margin-bottom: 20px;
-        font-size: 24px;
-        color: #ffffff;
-    }
-
     input[type="file"] {
         display: block;
         margin: 20px auto;
@@ -48,9 +43,9 @@
         transition: background-color 0.3s ease;
     }
 
-    button[type="submit"]:hover {
-        background-color: #5c5c7a;
-    }
+        button[type="submit"]:hover {
+            background-color: #5c5c7a;
+        }
 
     img {
         margin-top: 20px;
@@ -65,16 +60,19 @@
     }
 </style>
 
+<div class="upload-container">
+    <h2>Firebase'e Fotoğraf Yükle</h2>
 
-<h2>Firebase'e Fotoğraf Yükle</h2>
+    <form asp-action="Upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" />
+        <input type="hidden" name="mediaId" value="@mediaId" />
+        <button type="submit">Yükle</button>
+    </form>
 
-<form asp-action="Upload" method="post" enctype="multipart/form-data">
-    <input type="file" name="file" />
-    <button type="submit">Yükle</button>
-</form>
-
-@if (ViewBag.ImageUrl != null)
-{
-    <p><strong>Görsel yüklendi:</strong></p>
-    <img src="@ViewBag.ImageUrl" style="max-width:300px;" />
-}
+    @if (ViewBag.ImageUrl != null)
+    {
+        <p><strong>Görsel yüklendi:</strong></p>
+        <img src="@ViewBag.ImageUrl" />
+        <p><a href="/Media/ImageList?mediaId=@mediaId">Tüm Görselleri Görüntüle</a></p>
+    }
+</div>

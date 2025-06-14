@@ -1,17 +1,14 @@
 ﻿using BusinessLayer.Abstract;
 using DataAccessLayer.Abstract;
 using EntityLayer.Concrete;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BusinessLayer.Concrete
 {
     public class MediaImageManager : IMediaImageService
     {
-        IMediaImageDal _mediaimageDal;
+        private readonly IMediaImageDal _mediaimageDal;
 
         public MediaImageManager(IMediaImageDal mediaimageDal)
         {
@@ -41,6 +38,11 @@ namespace BusinessLayer.Concrete
         public void TUpdate(MediaImage t)
         {
             _mediaimageDal.Update(t);
+        }
+
+        public List<MediaImage> GetListByMediaId(int mediaId)
+        {
+            return _mediaimageDal.GetListAll().Where(x => x.MediaId == mediaId).ToList();
         }
     }
 }
